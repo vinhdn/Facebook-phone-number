@@ -5,19 +5,22 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUpdatePostFormRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Post;
+use App\Models\Phone;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
     private $post;
+    private $phone;
 
-    public function __construct(Post $post)
+    public function __construct(Post $post, Phone $phone)
     {
         $this->post = $post;
+        $this->phone = $phone;
 
         $this->middleware('auth')
                     ->except([
-                        'index', 'show'
+                        'index', 'show', 'phone'
                     ]);
     }
 
@@ -103,6 +106,23 @@ class PostController extends Controller
             return redirect()->back();
 
         return view('posts.edit', compact('post'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function phone($phone)
+    {
+        if(!$phone) {
+            return ['status' => 0];
+        }
+        if (!$post = $this->phone->find($phone))
+            return ['status' => 0];
+
+        return $post;
     }
 
     /**
