@@ -87,6 +87,7 @@ class UserController extends Controller
         }
         $user = $this->userModel->getUserById($id);
         if($user) {
+            $user->api_token = hash('sha256', Str::random(60));
             $user->status = $newStatus;
             $user->save();
         }

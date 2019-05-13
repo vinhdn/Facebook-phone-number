@@ -29,7 +29,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/posts';
+    protected $redirectTo = '/register';
 
     /**
      * Create a new controller instance.
@@ -39,7 +39,12 @@ class RegisterController extends Controller
     public function __construct()
     {
         Auth::guard("web")->logout();
-        $this->middleware('guest');
+        if (!Auth::guard('manager')->check()) {
+            $this->redirectTo = '/register';
+        } else {
+            $this->redirectTo = '/user';
+        }
+        // $this->middleware('guest');
     }
 
     /**

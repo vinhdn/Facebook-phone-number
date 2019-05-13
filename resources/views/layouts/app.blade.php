@@ -39,10 +39,13 @@ if (\Illuminate\Support\Facades\Auth::guard('manager')->check()) {
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
+                    @if ($requester)
                     <ul class="navbar-nav mr-auto">
-                        <a class="nav-link" href="{{ route('users.index') }}">Users</a>   
+                        <a class="nav-link" href="{{ route('users.index') }}">Danh sách người dùng</a>   
                         <a class="nav-link" href="{{ route('users.code') }}">Code</a>   
+                        <a class="nav-link" href="{{ route('register') }}">Tạo tài khoản</a>   
                     </ul>
+                    @endif
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
