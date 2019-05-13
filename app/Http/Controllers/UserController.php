@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Validator;
 
 class UserController extends Controller
 {
@@ -90,5 +92,50 @@ class UserController extends Controller
         }
         $listUser = $this->userModel->getListUser();
         return redirect(route('users.index', ['listUser' => $listUser]));
+    }
+
+
+    /**
+     * Cập nhật mật khẩu của người dùng
+     */
+    public function resetPassword(Request $data) {
+        if (!Auth::guard('manager')->check()) {
+            return redirect()->route("login");
+        }
+        $validator = Validator::make($data->all(), [
+            'id' => 'required',
+            'password' => 'required|string|min:6',
+        ]);
+        if ($validator->fails()) {
+            return redirect(route('users.resetPasswordIndex'))
+                ->withErrors($validator)
+                ->withInput();
+        }
+        $user = $this->userModel->getUserById($data['id']);
+        if($user) {
+            $user->api_token = hash('sha256', Str::random(60));
+            $user->password = Hash::make($data['password']);
+            $user->save();
+        }
+        $listUser = $this->userModel->getListUser();
+        return redirect(route('users.index', ['listUser' => $listUser]));
+    }
+
+    /**
+     * Màn hình cập nhật mật khẩu của người dùng
+     */
+    public function resetPasswordIndex($id) {
+        if (!Auth::guard('manager')->check()) {
+            return redirect()->route("login");
+        }
+        if (!$id) {
+            return redirect()->back();
+        }
+        $user = $this->userModel->getUserById($id);
+        if($user) {
+            return view('users.resetPassword', compact('user'));
+        } else {
+            return redirect()->back();
+        }
     }
 }

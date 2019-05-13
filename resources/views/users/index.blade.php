@@ -33,6 +33,7 @@
                                 <th class="desktop">Email</th>
                                 <th class="desktop">Trạng thái</th>
                                 <th></th>
+                                <th></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -65,6 +66,11 @@
                                         @else
                                             
                                         @endif
+                                            </a>
+                                        </div></td>
+                                        <td><div class="btn-group pull-right">
+                                            <a href="{{ route('users.resetPasswordIndex', ['id' => $user->id]) }}" class="btn green btn-xs">
+                                            Đổi mật khẩu
                                             </a>
                                         </div></td>
                                 </tr>
