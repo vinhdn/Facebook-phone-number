@@ -48,11 +48,11 @@ class ApiController extends Controller
      */
     public function phone(Request $request)
     {
-        $phone = isset($request['id']) ? $request['id'] : null;
-        if(!$phone) {
+        $uid = isset($request['id']) ? $request['id'] : null;
+        if(!$uid) {
             return ['status' => 0, 'message' => 'Thiếu thông tin facebook id'];
         }
-        if (!$phone = $this->phone->find($phone))
+        if (!$phone = $this->phone->getPhoneByUid($uid))
             return ['status' => 0,'message' => 'Không tìm thấy số điện thoại'];
 
         return ['status' => 1,'message' => 'Thành công',
