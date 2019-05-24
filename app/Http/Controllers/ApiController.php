@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Post;
 use App\Models\Phone;
 use App\Models\User;
+use App\Models\SearchLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -19,12 +20,14 @@ class ApiController extends Controller
     private $post;
     private $phone;
     private $userModel;
+    private $searchLog;
 
-    public function __construct(Post $post, Phone $phone, User $user)
+    public function __construct(Post $post, Phone $phone, User $user, SearchLog $searchLog)
     {
         $this->post = $post;
         $this->phone = $phone;
         $this->userModel = $user;
+        $this->searchLog = $searchLog;
         $this->middleware('auth:api')->except([
             'doLogin', 'login', 'loginAdmin'
         ]);;
@@ -43,18 +46,43 @@ class ApiController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  array $request
      * @return \Illuminate\Http\Response
      */
     public function phone(Request $request)
     {
-        $uid = isset($request['id']) ? $request['id'] : null;
+        $data = $request->all();
+        $validator = Validator::make($data, [
+            'id' => 'required',
+            'name' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return ['status' => 0,
+            'error' => $validator->errors()];
+        }
+        $uid = isset($data['id']) ? $data['id'] : null;
         if(!$uid) {
             return ['status' => 0, 'message' => 'Thiếu thông tin facebook id'];
         }
         if (!$phone = $this->phone->getPhoneByUid($uid))
             return ['status' => 0,'message' => 'Không tìm thấy số điện thoại'];
-
+        $userId = Auth::guard('api')->user()->id;
+        $oldLog = $this->searchLog->isExistHistories($uid, $userId);
+        // if($oldLog) {
+        //     $oldLog->phone = ''.$phone;
+        //     $oldLog->fbName = $data['name'];
+        //     $oldLog->url = isset($data['url']) ? $data['url'] : null;
+        //     $oldLog->save();
+        // } else {
+        $log = SearchLog::updateOrCreate([
+            'fbId' => $uid, 
+            'userId' => $userId,
+            'phone' => $phone,
+            'fbName' => $data['name'],
+            'url' => isset($data['url']) ? $data['url'] : null,
+            'gender' => isset($data['gender']) ? $data['gender'] : 'male',
+        ]);
+    // }
         return ['status' => 1,'message' => 'Thành công',
             'data' => $phone];;
     }
@@ -94,6 +122,14 @@ class ApiController extends Controller
             return ['status' => 0,
             'message' => 'Đã có lỗi xảy ra, vui lòng thử lại sau'];
         }
+    }
+
+    public function getHistories() {
+        $id = Auth::guard('api')->id;
+        $histories = $this->searchLog->searchHistories($id);
+        return ['status' => 1,
+                'data' => $histories,
+            'message' => 'Lấy lịch sử thành công'];
     }
 
 }

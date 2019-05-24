@@ -17,5 +17,3 @@ Route::post('/user/resetPassword', 'UserController@resetPassword')->name('users.
 
 Route::get('/login', 'Auth\LoginController@index')->name('login');
 Route::post('/login', 'Auth\LoginController@login')->name('loginAdmin');
-
-Route::get('/phone/{phone}', 'PostController@phone')->name('phone');

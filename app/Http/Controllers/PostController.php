@@ -109,23 +109,6 @@ class PostController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function phone($phone)
-    {
-        if(!$phone) {
-            return ['status' => 0];
-        }
-        if (!$post = $this->phone->find($phone))
-            return ['status' => 0];
-
-        return $post;
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \App\Http\Requests\StoreUpdatePostFormRequest  $request
