@@ -20,4 +20,4 @@ Route::middleware('auth:api')->post('/user', function (Request $request) {
 Route::post('/login', 'ApiController@doLogin')->name('doLogin');
 
 Route::middleware('auth:api')->get('/phonebyid', 'ApiController@phone')->name('phone');
-Route::middleware('auth:api')->get('/searchLog', 'ApiController@searchLog')->name('searchLog');
+Route::middleware('auth:api')->get('/searchLog', 'ApiController@getHistories')->name('searchLog');

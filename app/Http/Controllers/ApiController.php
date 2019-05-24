@@ -68,12 +68,6 @@ class ApiController extends Controller
             return ['status' => 0,'message' => 'Không tìm thấy số điện thoại'];
         $userId = Auth::guard('api')->user()->id;
         $oldLog = $this->searchLog->isExistHistories($uid, $userId);
-        // if($oldLog) {
-        //     $oldLog->phone = ''.$phone;
-        //     $oldLog->fbName = $data['name'];
-        //     $oldLog->url = isset($data['url']) ? $data['url'] : null;
-        //     $oldLog->save();
-        // } else {
         $log = SearchLog::updateOrCreate([
             'fbId' => $uid, 
             'userId' => $userId,
@@ -125,7 +119,7 @@ class ApiController extends Controller
     }
 
     public function getHistories() {
-        $id = Auth::guard('api')->id;
+        $id = Auth::guard('api')->user()->id;
         $histories = $this->searchLog->searchHistories($id);
         return ['status' => 1,
                 'data' => $histories,
